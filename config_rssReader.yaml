@@ -1,0 +1,11 @@
+database:
+  sqlite_path: "/Users/danieltremer/Documents/rss_feed_crawler/rss_links.db"
+  rss_links_table_name: "rss_links"
+  website_table_name: "rss_feed_websites"
+
+csv:
+  rss_links: "rss_links.csv"
+  rss_feed_websites: "rss_feed_websites.csv"
+
+chunk_size: 5
+days_to_crawl: 1
