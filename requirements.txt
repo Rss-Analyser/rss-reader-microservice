@@ -3,4 +3,4 @@ tenacity
 flask
 requests
 PyYAML
-psycopg2
+psycopg2-binary
