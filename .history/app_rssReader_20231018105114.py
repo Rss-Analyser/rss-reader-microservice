@@ -52,7 +52,7 @@ def fetch_rss_links_from_db(chunk_size=CHUNK_SIZE):
             cursor = conn.cursor()
             cursor.execute("SELECT link FROM rss_links")
             all_links = [row[0] for row in cursor.fetchall()]
-    except psycopg2.Error as e:
+    except sqlite3.Error as e:
         print(f"Database error: {e}")
         return []
 

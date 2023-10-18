@@ -63,9 +63,7 @@ class RSSReader:
                     VALUES (%s, %s, %s, %s, %s)
                     ''', entry)
                 except psycopg2.IntegrityError:  # Link already exists
-                    conn.rollback()  # Rollback transaction on error
-                else:
-                    conn.commit()  # Commit transaction if no errors
+                    pass
 
     def create_table_for_run(self):
         table_name = "rss_entries_" + datetime.now().strftime("%Y%m%d")

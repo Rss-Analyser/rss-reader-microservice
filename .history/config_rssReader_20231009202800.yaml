@@ -3,13 +3,6 @@ database:
   rss_links_table_name: "rss_links"
   website_table_name: "rss_feed_websites"
 
-  type: "cockroachdb"
-  dbname: "rss_db"
-  user: root
-  password: null
-  host: "localhost"
-  port: "26257"
-
 csv:
   rss_links: "rss_links.csv"
   rss_feed_websites: "rss_feed_websites.csv"

@@ -1,0 +1,5 @@
+feedparser
+tenacity
+flask
+requests
+PyYAML

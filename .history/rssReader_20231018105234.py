@@ -60,12 +60,10 @@ class RSSReader:
                 try:
                     cursor.execute(f'''
                     INSERT INTO {table_name} (publisher, title, link, published, language)
-                    VALUES (%s, %s, %s, %s, %s)
+                    VALUES (?, ?, ?, ?, ?)
                     ''', entry)
-                except psycopg2.IntegrityError:  # Link already exists
-                    conn.rollback()  # Rollback transaction on error
-                else:
-                    conn.commit()  # Commit transaction if no errors
+                except sqlite3.IntegrityError:  # Link already exists
+                    pass
 
     def create_table_for_run(self):
         table_name = "rss_entries_" + datetime.now().strftime("%Y%m%d")

@@ -2,24 +2,22 @@ import feedparser
 from datetime import datetime, timedelta
 import sqlite3
 from tenacity import retry, stop_after_attempt, wait_fixed
-import psycopg2
-
 
 
 class RSSReader:
 
-    def __init__(self, database, days_to_crawl=1):
+    def __init__(self, database="rss_links.db", days_to_crawl=1):
         self.database = database
         self.days_to_crawl = days_to_crawl
 
     def _get_rss_links(self):
-        with psycopg2.connect(self.database) as conn:
+        with sqlite3.connect(self.database) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT link FROM rss_links")
             return [row[0] for row in cursor.fetchall()]
 
     def _load_existing_entries(self, table_name):
-        with psycopg2.connect(self.database) as conn:
+        with sqlite3.connect(self.database) as conn:
             cursor = conn.cursor()
             cursor.execute(f"SELECT publisher, title, link, published, language FROM {table_name}")
             return set(cursor.fetchall())
@@ -54,22 +52,20 @@ class RSSReader:
             return current_entries
 
     def _save_to_db(self, entries, table_name):
-        with psycopg2.connect(self.database) as conn:
+        with sqlite3.connect(self.database) as conn:
             cursor = conn.cursor()
             for entry in entries:
                 try:
                     cursor.execute(f'''
                     INSERT INTO {table_name} (publisher, title, link, published, language)
-                    VALUES (%s, %s, %s, %s, %s)
+                    VALUES (?, ?, ?, ?, ?)
                     ''', entry)
-                except psycopg2.IntegrityError:  # Link already exists
-                    conn.rollback()  # Rollback transaction on error
-                else:
-                    conn.commit()  # Commit transaction if no errors
+                except sqlite3.IntegrityError:  # Link already exists
+                    pass
 
     def create_table_for_run(self):
         table_name = "rss_entries_" + datetime.now().strftime("%Y%m%d")
-        with psycopg2.connect(self.database) as conn:
+        with sqlite3.connect(self.database) as conn:
             cursor = conn.cursor()
             cursor.execute(f'''
             CREATE TABLE IF NOT EXISTS {table_name} (

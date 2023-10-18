@@ -1,0 +1,6 @@
+feedparser
+tenacity
+flask
+requests
+PyYAML
+psycopg2

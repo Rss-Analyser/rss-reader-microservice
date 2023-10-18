@@ -1,7 +1,7 @@
 import requests
 import time
 
-BASE_URL = "http://localhost:5002"
+BASE_URL = "http://0.0.0.0:5002"
 
 def test_start_rss_read():
     response = requests.post(f"{BASE_URL}/start-rss-read", json={

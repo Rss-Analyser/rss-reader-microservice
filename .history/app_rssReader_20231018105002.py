@@ -12,7 +12,6 @@ import sqlite3
 import datetime
 import threading
 import time
-import psycopg2
 
 app = Flask(__name__)
 
@@ -48,11 +47,11 @@ entries_lock = threading.Lock()  # Lock for thread-safe updates
 def fetch_rss_links_from_db(chunk_size=CHUNK_SIZE):
     """Fetch RSS links from the database and split them into chunks."""
     try:
-        with psycopg2.connect(DATABASE_PATH) as conn:
+        with sqlite3.connect(DATABASE_PATH) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT link FROM rss_links")
             all_links = [row[0] for row in cursor.fetchall()]
-    except psycopg2.Error as e:
+    except sqlite3.Error as e:
         print(f"Database error: {e}")
         return []
 
@@ -100,7 +99,7 @@ def fetch_rss_data_chunk(rss_links_chunk):
                 break
 
             try:
-                with psycopg2.connect(DATABASE_PATH) as conn:
+                with sqlite3.connect(DATABASE_PATH) as conn:
                     cursor = conn.cursor()
                     cursor.execute(f"SELECT COUNT(*) FROM rss_entries_{datetime.datetime.now().strftime('%Y%m%d')}")
                     count = cursor.fetchone()[0]
@@ -116,7 +115,7 @@ def fetch_rss_data_chunk(rss_links_chunk):
                     RSS_READER_STATUS["rss_feeds_crawled"] += 1
                 break
 
-            except psycopg2.OperationalError as e:
+            except sqlite3.OperationalError as e:
                 if "database is locked" in str(e):
                     # Database is locked, wait and retry
                     time.sleep(1)  # Wait for a second before retrying
